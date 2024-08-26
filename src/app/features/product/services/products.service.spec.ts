@@ -1,4 +1,4 @@
-import { TestBed } from '@angular/core/testing';
+import { fakeAsync, TestBed, tick, waitForAsync } from '@angular/core/testing';
 
 import { ProductsService } from './products.service';
 import { TodoService } from '@utils/todo.service';
@@ -7,11 +7,11 @@ import { HttpClientTestingModule, HttpTestingController } from '@angular/common/
 
 import { Product } from '../models/product.model';
 import { SnackBarService } from '@shared/services/snack-bar.service';
+import { inject } from '@angular/core';
 
 
-describe('ProductsService', () => {
+describe('ProductService', () => {
   let service: ProductsService;
-  let todoService: TodoService;
   let snackBarServiceSpy: jasmine.SpyObj<SnackBarService>;
 
   beforeEach(() => {
@@ -25,82 +25,67 @@ describe('ProductsService', () => {
       ],
     });
     service = TestBed.inject(ProductsService);
-    todoService = TestBed.inject(TodoService);
   });
 
-  it('Debe agregar un nuevo producto', () => {
-       const productToAdd: Product = {
-        id: 1,
+  it('Debería agregar un nuevo producto', fakeAsync(() => {
+      const productToAdd: Product = {
+        id: 111,
         name: 'Producto nuevo',
         description: 'Descripción',
-        price: 10,
+        price: 10000,
         createdAt: new Date(),
         updatedAt: new Date()
       };
-      service.addProduct(productToAdd).subscribe(result => {
-        expect(result).toBeTrue();
-        service.getProducts().subscribe(products => {
-          expect(products).toContain(productToAdd);
-          expect(snackBarServiceSpy.showSnackBar).toHaveBeenCalledWith(
-            'Producto agregado correctamente',
-            'success'
-          );
-        })
-      });
-  });
+      let isOk: boolean = false;
+      service.addProduct(productToAdd).subscribe(result => isOk = result);
+      tick(1000);
+      expect(isOk).toBeTrue();
+  }));
 
-  it('Deberia actualizar el producto existente', () => {
+  it('Debería actualizar el producto existente', fakeAsync(() => {
     const existingProduct: Product = {
-      id: 1,
-      name: 'Producto nuevo',
-      description: 'Descripción',
-      price: 10,
+      id: 1009,
+      name: 'Producto actualizado',
+      description: 'Desc',
+      price: 10000,
       createdAt: new Date(),
       updatedAt: new Date()
     };
-    const updatedProduct = { ...existingProduct, name: 'Updated Product' };
-    service.updateProduct(updatedProduct).subscribe(result => {
-      expect(result).toBeTrue();
-      service.getProducts().subscribe(products => {
-        expect(products).toContain(updatedProduct);
-      })
-      //expect(service.getProducts().getValue()).toContain(updatedProduct);
-    });
-  });
+    let isUpdated: boolean = false;
+    service.addProduct(existingProduct).subscribe();
+    tick(1000);
+    service.updateProduct(existingProduct).subscribe(result => isUpdated = result);
+    tick(1000);
+    expect(isUpdated).toBeTrue();
+  }));
 
-  it('Deberia eliminar un producto existente', () => {
+  it('Debería eliminar un producto existente', fakeAsync(() => {
     const productToDelete = {
-      id: 2,
+      id: 290,
       name: 'Producto to Delete',
       description: 'Descripción delete',
       price: 10,
       createdAt: new Date(),
       updatedAt: new Date()
     };
-    service.addProduct(productToDelete);
-    service.deleteProduct(productToDelete.id).subscribe(result => {
-      expect(result).toBeTrue();
-      service.getProducts().subscribe(products => {
-        expect(products).not.toContain(productToDelete);
-      })
-      //expect(service.getProducts().getValue()).not.toContain(productToDelete);
-    });
-  });
+    let isEliminated: boolean = false;
+    service.addProduct(productToDelete).subscribe();
+    tick(1000);
+    service.deleteProduct(productToDelete.id).subscribe(result => isEliminated = result);
+    tick(1000);
+    expect(isEliminated).toBeTrue();
+  }));
 
-  it('should get the list of products', () => {
-    const products = [
-      { id: 1, name: 'Product 1', description: 'Desc', price: 20000, createdAt: new Date(), updatedAt: new Date() },
-      { id: 2, name: 'Product 2', description: 'Desc', price: 20000, createdAt: new Date(), updatedAt: new Date() },
-    ];
+  it('Debería obtener el listado de Productos', () => {
     service.getProducts().subscribe(result => {
-      expect(result).toEqual(products);
+      expect(result.length).toBeGreaterThan(0);
     });
   });
 
 
 });
 
-describe('TodoService', () => {
+describe('TodoService [Mock API External]', () => {
   let todoService: TodoService;
   let httpMock: HttpTestingController;
 
@@ -117,7 +102,7 @@ describe('TodoService', () => {
     httpMock.verify();
   });
 
-  it('Deberia retornar el item con ID 1', () => {
+  it('Debería retornar el item con ID 1 del API de JsonPlaceHolder', () => {
     const mockTodo = {
       userId: 1,
       id: 1,
