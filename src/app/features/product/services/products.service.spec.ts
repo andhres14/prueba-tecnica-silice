@@ -47,5 +47,90 @@ describe('ProductsService', () => {
           );
         })
       });
+  });
+
+  it('Deberia actualizar el producto existente', () => {
+    const existingProduct: Product = {
+      id: 1,
+      name: 'Producto nuevo',
+      description: 'Descripción',
+      price: 10,
+      createdAt: new Date(),
+      updatedAt: new Date()
+    };
+    const updatedProduct = { ...existingProduct, name: 'Updated Product' };
+    service.updateProduct(updatedProduct).subscribe(result => {
+      expect(result).toBeTrue();
+      service.getProducts().subscribe(products => {
+        expect(products).toContain(updatedProduct);
+      })
+      //expect(service.getProducts().getValue()).toContain(updatedProduct);
     });
+  });
+
+  it('Deberia eliminar un producto existente', () => {
+    const productToDelete = {
+      id: 2,
+      name: 'Producto to Delete',
+      description: 'Descripción delete',
+      price: 10,
+      createdAt: new Date(),
+      updatedAt: new Date()
+    };
+    service.addProduct(productToDelete);
+    service.deleteProduct(productToDelete.id).subscribe(result => {
+      expect(result).toBeTrue();
+      service.getProducts().subscribe(products => {
+        expect(products).not.toContain(productToDelete);
+      })
+      //expect(service.getProducts().getValue()).not.toContain(productToDelete);
+    });
+  });
+
+  it('should get the list of products', () => {
+    const products = [
+      { id: 1, name: 'Product 1', description: 'Desc', price: 20000, createdAt: new Date(), updatedAt: new Date() },
+      { id: 2, name: 'Product 2', description: 'Desc', price: 20000, createdAt: new Date(), updatedAt: new Date() },
+    ];
+    service.getProducts().subscribe(result => {
+      expect(result).toEqual(products);
+    });
+  });
+
+
+});
+
+describe('TodoService', () => {
+  let todoService: TodoService;
+  let httpMock: HttpTestingController;
+
+  beforeEach(() => {
+    TestBed.configureTestingModule({
+      imports: [HttpClientTestingModule],
+      providers: [TodoService],
+    });
+    todoService = TestBed.inject(TodoService);
+    httpMock = TestBed.inject(HttpTestingController);
+  });
+
+  afterEach(() => {
+    httpMock.verify();
+  });
+
+  it('Deberia retornar el item con ID 1', () => {
+    const mockTodo = {
+      userId: 1,
+      id: 1,
+      title: 'delectus aut autem',
+      completed: false,
+    };
+
+    todoService.getTodoById(1).subscribe(todo => {
+      expect(todo).toEqual(mockTodo);
+    });
+
+    const req = httpMock.expectOne('https://jsonplaceholder.typicode.com/todos/1');
+    expect(req.request.method).toBe('GET');
+    req.flush(mockTodo);
+  });
 });

@@ -1,5 +1,10 @@
 <mat-toolbar color="primary">
-  <span>CRUD SILICE</span>
+  <span>CRUD PRODUCTOS - SILICE</span>
   <span class="example-spacer"></span>
-  <button routerLink="/products/create" mat-raised-button color="warn">Crear Producto</button>
+  @if (!isProductsView) {
+    <button routerLink="/products" mat-raised-button color="warn">Ver Listado</button>
+  }
+  @else {
+    <button routerLink="/products/create" mat-raised-button color="warn">Crear Producto</button>
+  }
 </mat-toolbar>
