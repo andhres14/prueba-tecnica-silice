@@ -35,12 +35,19 @@ enfoque para cumplir con ese requerimiento llamado SCAM (adjunto img de dicho en
 
 ## Development server
 
-Run `ng serve` for a dev server. Navigate to `http://localhost:4200/`. The application will automatically reload if you change any of the source files.
+Go to the project directory, open a new terminal and Run `ng serve` for a dev server. Navigate to `http://localhost:4200/`. The application will automatically reload if you change any of the source files.
+
+### Resultado
+![alt tableMain](./src/docs/tableMainImg.png)
+
+![alt tableMain](./src/docs/formProduct.png)
+
+
 
 ## Ejecutando tests unitarios
 
-- Run `ng test` to execute the unit tests via [Karma](https://karma-runner.github.io).
-- Chrome
+- Go to the project directory, open a new terminal and Run `ng test` to execute the unit tests via [Karma](https://karma-runner.github.io).
+- Open Chrome
 
 ### Resultado final
 
