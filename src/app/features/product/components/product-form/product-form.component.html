@@ -11,20 +11,21 @@
               <mat-label>Nombre</mat-label>
               <input matInput formControlName="name" placeholder="Ej: producto 1">
               <mat-error *ngIf="formProduct.get('name')?.hasError('required')">Nombre es requerido</mat-error>
+              <mat-error *ngIf="formProduct.get('name')?.hasError('minlength')">Mínimo 3 caracteres</mat-error>
             </mat-form-field>
 
             <mat-form-field appearance="outline">
               <mat-label>Descripción</mat-label>
               <textarea matInput formControlName="description"></textarea>
-              <mat-error *ngIf="formProduct.get('description')?.hasError('required')">Descripción es requerido</mat-error>
             </mat-form-field>
 
             <mat-form-field appearance="outline">
               <mat-label>Precio</mat-label>
-              <input matInput formControlName="price" [min]="0" type="number" placeholder="0">
+              <input matInput formControlName="price" [min]="1" type="number" placeholder="0">
               <span matTextPrefix>$&nbsp;</span>
               <span matTextSuffix>.00</span>
               <mat-error *ngIf="formProduct.get('price')?.hasError('required')">Precio es requerido</mat-error>
+              <mat-error *ngIf="formProduct.get('price')?.hasError('min')">Precio debe ser mayor a 0</mat-error>
             </mat-form-field>
 
             <mat-card-actions class="actions">

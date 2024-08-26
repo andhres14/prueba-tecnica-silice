@@ -11,11 +11,11 @@
         </div>
         <div class="w100">
           <h4>Descripción</h4>
-          <p>{{ product?.description }}</p>
+          <p>{{ product?.description || 'No hay descripción' }}</p>
         </div>
         <div class="w100">
           <h4>Precio</h4>
-          <p>{{ product?.price | currency: 'USD' }}</p>
+          <p>{{ product?.price | currency }}</p>
         </div>
         <div class="w100">
           <h4>Fecha de creación</h4>

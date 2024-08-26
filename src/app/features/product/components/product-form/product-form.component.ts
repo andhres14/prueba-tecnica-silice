@@ -46,9 +46,9 @@ export class ProductFormComponent implements OnInit {
     private snackBarService: SnackBarService
   ) {
     this.formProduct = this.fb.group({
-      name: ['', Validators.required],
-      description: ['', Validators.required],
-      price: ['', Validators.required]
+      name: ['', [ Validators.required, Validators.minLength(3) ]],
+      description: [''],
+      price: ['', [Validators.required, Validators.min(1)]]
     })
   }
 
