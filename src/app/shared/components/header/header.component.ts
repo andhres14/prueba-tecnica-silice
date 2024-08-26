@@ -12,17 +12,15 @@ export class HeaderComponent implements OnInit {
   constructor(private router: Router) {}
 
   ngOnInit(): void {
+    this.isProductsView = true;
     this.router.events.pipe(
       filter(event => event instanceof NavigationEnd),
       map(event => event as NavigationEnd),
     ).subscribe((event) => {
-      console.log(event.url);
-      if (event && !event.url.includes('/products')) {
-        this.isProductsView = false;
-      }
+      this.isProductsView = event.url.toString() == '/products';
     });
 
-    if (!this.router.url.includes('/products')) {
+    if (this.router.url != '/products') {
       this.isProductsView = false;
     }
   }
