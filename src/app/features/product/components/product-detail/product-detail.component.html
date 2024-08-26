@@ -1,0 +1,40 @@
+<div class="card-cs">
+  <mat-card appearance="raised" class="content">
+    <mat-card-header>
+      <mat-card-title>Detalle del Producto</mat-card-title>
+    </mat-card-header>
+    <mat-card-content>
+      <div fxLayout="column" [style.padding]="'10px'">
+        <div class="w100">
+          <h4>Nombre</h4>
+          <p>{{ product?.name }}</p>
+        </div>
+        <div class="w100">
+          <h4>Descripción</h4>
+          <p>{{ product?.description }}</p>
+        </div>
+        <div class="w100">
+          <h4>Precio</h4>
+          <p>{{ product?.price | currency: 'USD' }}</p>
+        </div>
+        <div class="w100">
+          <h4>Fecha de creación</h4>
+          <p>{{ product?.createdAt | date: 'fullDate' }}</p>
+        </div>
+        <div class="w100">
+          <h4>Fecha de última actualización</h4>
+          <p>{{ product?.updatedAt | date: 'fullDate' }}</p>
+        </div>
+      </div>
+      <mat-card-actions class="actions">
+        <button type="button"
+          [disabled]="loading"
+          routerLink='/products' mat-raised-button color="primary">Ir a Listado</button>
+        <div style="padding: 10px;"></div>
+      </mat-card-actions>
+    </mat-card-content>
+    <mat-card-footer>
+      <mat-progress-bar *ngIf="loading" mode="indeterminate"></mat-progress-bar>
+    </mat-card-footer>
+  </mat-card>
+</div>

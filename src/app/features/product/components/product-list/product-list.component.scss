@@ -1,0 +1,31 @@
+table {
+  width: 100%;
+  overflow-x: auto;
+  display: block;
+}
+
+th, td {
+  width: 10%;
+}
+
+.main-body {
+  padding: 20px;
+  max-width: 1248px;
+  margin: 0 auto;
+}
+
+mat-form-field {
+  width: 100%;
+}
+
+.actions {
+  display: flex;
+  gap: 5px;
+}
+
+.ellipsis {
+  white-space: nowrap;
+  text-overflow:ellipsis;
+  overflow: hidden;
+  max-width:1px;
+}

@@ -1,0 +1,60 @@
+.card-cs {
+  margin-top: 50px;
+  border-radius: 2px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.content {
+  width: 70%;
+}
+
+#formProduct {
+  padding: 15px;
+  mat-form-field {
+    padding-top: 5px;
+    width: 100%;
+    display: block;
+  }
+  mat-card-actions {
+    padding: 0!important;
+  }
+}
+
+button {
+  flex: 1;
+}
+
+.w100 {
+  width: 100%;
+}
+
+h4 {
+  color: rgb(63, 81, 181);
+}
+
+p {
+  font-size: 14px;
+}
+
+mat-card-header {
+  background: rgb(63, 81, 181);
+  padding: 5px;
+  color:white;
+
+  text-align: center;
+  justify-content: center;
+}
+
+mat-card-subtitle {
+  color: #ccc5c5;
+}
+
+mat-card-content {
+  padding: 10px;
+}
+
+mat-card {
+  padding:0;
+}

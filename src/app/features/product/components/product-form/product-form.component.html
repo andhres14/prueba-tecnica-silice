@@ -1,0 +1,46 @@
+<div class="card-cs">
+    <mat-card appearance="raised" class="content">
+      <mat-card-header>
+        <mat-card-title>{{ isCreationMode ? 'Nuevo Producto' : 'Editar Producto' }}</mat-card-title>
+        <mat-card-subtitle>Realiza la creación o edición de un producto.</mat-card-subtitle>
+      </mat-card-header>
+      <mat-card-content>
+        <form id="formProduct" [formGroup]="formProduct" (ngSubmit)="onSubmit()">
+          <div fxLayout="column">
+            <mat-form-field appearance="outline">
+              <mat-label>Nombre</mat-label>
+              <input matInput formControlName="name" placeholder="Ej: producto 1">
+              <mat-error *ngIf="formProduct.get('name')?.hasError('required')">Nombre es requerido</mat-error>
+            </mat-form-field>
+
+            <mat-form-field appearance="outline">
+              <mat-label>Descripción</mat-label>
+              <textarea matInput formControlName="description"></textarea>
+              <mat-error *ngIf="formProduct.get('description')?.hasError('required')">Descripción es requerido</mat-error>
+            </mat-form-field>
+
+            <mat-form-field appearance="outline">
+              <mat-label>Precio</mat-label>
+              <input matInput formControlName="price" [min]="0" type="number" placeholder="0">
+              <span matTextPrefix>$&nbsp;</span>
+              <span matTextSuffix>.00</span>
+              <mat-error *ngIf="formProduct.get('price')?.hasError('required')">Precio es requerido</mat-error>
+            </mat-form-field>
+
+            <mat-card-actions class="actions">
+              <button type="button"
+                [disabled]="sending || loading"
+                routerLink='/products' mat-raised-button color="warn">Cancelar</button>
+              <div style="padding: 10px;"></div>
+              <button type="submit"
+                [disabled]="sending || loading"
+                mat-raised-button color="primary">Guardar</button>
+            </mat-card-actions>
+          </div>
+        </form>
+      </mat-card-content>
+      <mat-card-footer>
+        <mat-progress-bar *ngIf="sending || loading" mode="indeterminate"></mat-progress-bar>
+      </mat-card-footer>
+    </mat-card>
+</div>
