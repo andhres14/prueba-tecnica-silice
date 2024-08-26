@@ -43,7 +43,7 @@ export class ProductListComponent implements OnInit, AfterViewInit {
   constructor(
     private productService: ProductsService,
     private snackBarService: SnackBarService,
-    private router: Router
+    public router: Router
   ) { }
 
   ngOnInit(): void {
@@ -78,12 +78,16 @@ export class ProductListComponent implements OnInit, AfterViewInit {
 
   onDelete(productId: number) {
     if (confirm('¿Seguro que desea eliminar este producto?')) {
-      this.productService.deleteProduct(productId)
+      this.onDeleteAction(productId);
+    }
+  }
+
+  onDeleteAction(productId: number) {
+    this.productService.deleteProduct(productId)
         .subscribe(() => {
           this.snackBarService.showSnackBar('El producto fue eliminado con exito!', 'success');
           this.getProductsList();
         });
-    }
   }
 
   ngAfterViewInit(): void {

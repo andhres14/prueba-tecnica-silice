@@ -1,4 +1,4 @@
-import { ComponentFixture, fakeAsync, TestBed } from '@angular/core/testing';
+import { ComponentFixture, fakeAsync, TestBed, tick } from '@angular/core/testing';
 import { of } from 'rxjs';
 import { Router } from '@angular/router';
 
@@ -18,17 +18,12 @@ import { Product } from '@features/product/models/product.model';
 describe('ProductListComponent', () => {
   let component: ProductListComponent;
   let fixture: ComponentFixture<ProductListComponent>;
-  let productServiceSpy: jasmine.SpyObj<ProductsService>;
-  let router: Router;
 
-  beforeEach(() => {
-    productServiceSpy = jasmine.createSpyObj('ProductsService', ['getProducts']);
-    productServiceSpy.getProducts.and.returnValue(of([
-      { id: 1, name: 'Product 1', description: 'Description 1', price: 100, createdAt: new Date(), updatedAt: new Date() },
-      { id: 2, name: 'Product 2', description: 'Description 2', price: 200, createdAt: new Date(), updatedAt: new Date() }
-    ]));
+  let mockProductService: ProductsService;
 
-    TestBed.configureTestingModule({
+  beforeEach(async () => {
+    mockProductService = jasmine.createSpyObj('ProductsService', ['getProducts', 'deleteProduct']);
+    await TestBed.configureTestingModule({
       imports: [
         BrowserModule,
         BrowserAnimationsModule,
@@ -36,59 +31,76 @@ describe('ProductListComponent', () => {
         MatTableModule, MatPaginatorModule, MatSortModule,
         RouterTestingModule,
       ],
-      providers: [{ provide: ProductsService, useValue: productServiceSpy }]
+      providers: [
+        { provide: ProductsService, useValue: mockProductService }
+      ]
     }).compileComponents();
-
-    fixture = TestBed.createComponent(ProductListComponent);
-    component = fixture.componentInstance;
-    fixture.detectChanges();
   });
 
-  it('Debería crear el componente', () => {
+  beforeEach(() => {
+    fixture = TestBed.createComponent(ProductListComponent);
+    component = fixture.componentInstance;
+  });
+
+  it('Debería crearse el componente', () => {
     expect(component).toBeTruthy();
   });
 
-  it('Debería paginar los productos', () => {
-    component.dataSource = new MatTableDataSource<Product>([
-      { id: 1, name: 'Product 1', description: 'Description 1', price: 100, createdAt: new Date(), updatedAt: new Date() },
-      { id: 2, name: 'Product 2', description: 'Description 2', price: 200, createdAt: new Date(), updatedAt: new Date() }
-    ]);
-    component.dataSource.sort = component.sort;
-    component.dataSource.paginator = component.paginator;
-    fixture.detectChanges();
+  it('Debería listar los productos de ProductService', fakeAsync(() => {
+       const mockProducts: Product[] = [
+         { id: 1, name: 'Product 1', description: '...', price: 10, createdAt: new Date(), updatedAt: new Date() },
+         { id: 2, name: 'Product 2', description: '...', price: 20, createdAt: new Date(), updatedAt: new Date() }
+       ];
+       (mockProductService.getProducts as jasmine.Spy).and.returnValue(of(mockProducts));
 
-    component.paginator.pageSize = 1; // Set page size to 1 for testing
-    component.paginator.pageIndex = 0; // Go to the first page
-    component.paginator.page.emit(); // Trigger page change
+       component.getProductsList();
+       tick();
+       fixture.detectChanges();
 
-    fixture.detectChanges();
-
-    const tableRows = fixture.nativeElement.querySelectorAll('mat-row');
-    expect(tableRows.length).toBe(1); // Only 1 product should be displayed on the first page
-  });
-
-  it('Debería listar correctamente los productos en la tabla', () => {
-    const tableRows = fixture.nativeElement.querySelectorAll('mat-row');
-    expect(tableRows.length).toBeGreaterThan(1); // Assuming 2 products in the mock data
-  });
-
-
-  it('Debería eliminar un producto', () => {
-    const productIdToDelete = 1; // Assuming product with ID 1 is being deleted
-    spyOn(window, 'confirm').and.returnValue(true); // Mock the confirmation dialog
-
-    component.onDelete(productIdToDelete);
-
-    expect(productServiceSpy.deleteProduct).toHaveBeenCalledWith(productIdToDelete);
-  });
-
-  it('Debería navegar a la página de edición del producto', fakeAsync(() => {
-    const productIdToEdit = 1; // Assuming product with ID 1 is being edited
-    spyOn(router, 'navigateByUrl'); // Spy on the router's navigateByUrl method
-
-    component.onEdit(productIdToEdit);
-
-    expect(router.navigateByUrl).toHaveBeenCalledWith(`/products/${productIdToEdit}/edit`);
+       expect(component.dataSource.data).toEqual(mockProducts);
   }));
+
+  it('Debería navegar a la página de edición cuando se hace click en el botón de editar', () => {
+    const router = jasmine.createSpyObj('Router', ['navigateByUrl']);
+    component.router = router;
+    const productId = 1;
+    component.onEdit(productId);
+
+    expect(router.navigateByUrl).toHaveBeenCalledWith(`/products/${productId}/edit`);
+  });
+
+
+
+  it('Deberia confirmar la eliminación antes de llamar a OnDeleteAction', () => {
+    const productId = 1;
+    const confirmSpy = spyOn(window, 'confirm').and.returnValue(true);
+    const onDeleteActionSpy = spyOn(component, 'onDeleteAction');
+
+    component.onDelete(productId);
+
+    expect(confirmSpy).toHaveBeenCalledTimes(1);
+    expect(confirmSpy).toHaveBeenCalledWith('¿Seguro que desea eliminar este producto?');
+    expect(onDeleteActionSpy).toHaveBeenCalledTimes(1);
+    expect(onDeleteActionSpy).toHaveBeenCalledWith(productId);
+  });
+
+  it('Debería mostrar la cantidad correcta de productos por página.', fakeAsync(() => {
+    const products = [
+      { id: 1, name: 'Product 1', description: 'Description 1', price: 10.99, createdAt: '2022-01-01' },
+      { id: 2, name: 'Product 2', description: 'Description 2', price: 9.99, createdAt: '2022-01-02' },
+      { id: 3, name: 'Product 3', description: 'Description 3', price: 12.99, createdAt: '2022-01-03' },
+      { id: 4, name: 'Product 4', description: 'Description 4', price: 11.99, createdAt: '2022-01-04' },
+      { id: 5, name: 'Product 5', description: 'Description 5', price: 10.99, createdAt: '2022-01-05' },
+    ];
+    (mockProductService.getProducts as jasmine.Spy).and.returnValue(of(products));
+
+    component.getProductsList();
+    tick();
+    fixture.detectChanges();
+
+    const tableRows = fixture.nativeElement.querySelectorAll('table tr');
+    expect(tableRows.length).toBe(6); // 5 productos + 1 fila cabecera
+  }));
+
 
 });

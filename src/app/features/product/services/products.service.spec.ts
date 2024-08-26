@@ -76,11 +76,21 @@ describe('ProductService', () => {
     expect(isEliminated).toBeTrue();
   }));
 
-  it('Debería obtener el listado de Productos', () => {
+  it('Debería obtener el listado de Productos', fakeAsync(() => {
+    const productToAdd = {
+      id: 29011,
+      name: 'Producto to Add',
+      description: 'Descripción Added',
+      price: 1011111,
+      createdAt: new Date(),
+      updatedAt: new Date()
+    };
+    service.addProduct(productToAdd).subscribe();
+    tick(1000);
     service.getProducts().subscribe(result => {
       expect(result.length).toBeGreaterThan(0);
     });
-  });
+  }));
 
 
 });
